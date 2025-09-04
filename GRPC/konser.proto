@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package konser;
+
+service KonserService {
+    rpc RegisterUser (User) returns (RegisterResponse);
+    rpc LoginUser (User) returns (LoginResponse);
+    rpc TambahKonser (Konser) returns (Status);
+    rpc EditKonser (Konser) returns (Status);
+    rpc HapusKonser (KonserId) returns (Status);
+    rpc PesanTiket (TiketRequest) returns (TiketResponse);
+    rpc LihatSemuaKonser (Empty) returns (stream Konser);
+    rpc PesanBanyak (stream TiketRequest) returns (GeneralResponse); 
+    rpc LiveChat (stream ChatMessage) returns (stream ChatMessage);
+}
+
+message User {
+    string username = 1;
+    string password = 2;
+}
+
+message Konser {
+    string nama = 1;
+    string lokasi = 2;
+    string tanggal = 3;
+    int32 jumlah_tiket = 4;
+}
+
+message Status {
+    string pesan = 1;
+}
+
+message RegisterResponse {
+    bool sukses = 1;
+    string pesan = 2;
+}
+
+message LoginResponse {
+    bool sukses = 1;
+    string pesan = 2;
+}
+
+message TiketRequest {
+    string konser_nama = 1;
+    int32 jumlah = 2;
+}
+
+message TiketResponse {
+    string pesan = 1;
+    int32 total = 2;
+}
+
+message ChatMessage {
+    string user = 1;
+    string pesan = 2;
+}
+
+message Empty {}
+
+message KonserId {
+    string nama = 1;
+}
+
+message GeneralResponse { 
+    string status = 1;
+    string pesan = 2;
+}

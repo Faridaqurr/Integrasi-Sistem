@@ -1,0 +1,9 @@
+{
+  "name": "grpc-ping",
+  "version": "1.0.0",
+  "main": "server.js",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.8.17",
+    "@grpc/proto-loader": "^0.7.5"
+  }
+}

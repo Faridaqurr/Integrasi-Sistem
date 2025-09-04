@@ -1,0 +1,99 @@
+/* public/style.css */
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+
+#chat-container {
+  max-width: 700px;
+  margin: 40px auto;
+  background: white;
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+#chat-window {
+  margin-bottom: 20px;
+}
+
+#chat-box {
+  margin-bottom: 20px;
+}
+
+#messages {
+  list-style: none;
+  padding: 0;
+  height: 320px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  background-color: #fafafa;
+}
+
+#messages li {
+  padding: 8px 12px;
+  border-bottom: 1px solid #eee;
+  word-wrap: break-word;
+}
+
+#messages li.me {
+  background-color: #d4edda;
+}
+
+#messages li.system {
+  font-style: italic;
+  color: #888;
+}
+
+form {
+  display: flex;
+  gap: 8px;
+}
+
+input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+button {
+  padding: 10px 16px;
+  background: #1d72b8;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: #155a96;
+}
+
+#online-users {
+  background-color: #e6f2ff;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+#online-users strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+#online-users ul {
+  list-style: none;
+  padding-left: 20px;
+  margin: 0;
+}
+
+#online-users li {
+  padding: 4px 0;
+}

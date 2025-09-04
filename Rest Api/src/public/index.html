@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concerts API</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1, h2 {
+            color: #ffcc00;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+        }
+        input {
+            background-color: #ffffff;
+            color: #000000;
+        }
+        button {
+            background-color: #ffcc00;
+            color: #000000;
+            cursor: pointer;
+            font-weight: bold; /* Membuat teks tombol menjadi tebal */
+        }
+        button:hover {
+            background-color: #ffaa00;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #203a43;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        li div {
+            display: flex;
+            gap: 5px; /* Mengatur jarak antara tombol */
+        }
+        li button {
+            background-color: #ffcc00;
+            color: #000000;
+            cursor: pointer;
+        }
+        li button:hover {
+            background-color: #ffaa00;
+        }
+        .concerts-list-container {
+            text-align: left;
+            margin: 0 auto;
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Concert's API Ubiee</h1>
+
+    <form id="add-concert-form">
+        <input type="text" id="name" placeholder="Name" required>
+        <input type="text" id="location" placeholder="Location" required>
+        <input type="date" id="date" required>
+        <button type="submit">Add Concert</button>
+    </form>
+
+    <button id="toggle-concerts-button">List</button>
+
+    <div class="concerts-list-container" style="display: none;">
+        <ul id="concerts-list"></ul>
+    </div>
+
+    <script>
+        const concertsListContainer = document.querySelector('.concerts-list-container');
+        const concertsList = document.getElementById('concerts-list');
+        const addConcertForm = document.getElementById('add-concert-form');
+        const toggleConcertsButton = document.getElementById('toggle-concerts-button');
+        const searchInput = document.getElementById('search');
+
+        // Function to format date
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const date = new Date(dateString);
+            return new Intl.DateTimeFormat('id-ID', options).format(date);
+        }
+
+        // Fetch and display concerts
+        function fetchConcerts(query = '') {
+            fetch(`/concerts?name=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    concertsList.innerHTML = '';
+                    data.forEach(concert => {
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `
+                            <span>${concert.name} - ${concert.location} - ${formatDate(concert.date)}</span>
+                            <div>
+                                <button onclick="deleteConcert('${concert._id}')">Delete</button>
+                                <button onclick="showUpdateForm('${concert._id}', '${concert.name}', '${concert.location}', '${concert.date}')">Update</button>
+                            </div>
+                        `;
+                        concertsList.appendChild(listItem);
+                    });
+                });
+        }
+
+        // Add
+        addConcertForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const location = document.getElementById('location').value;
+            const date = document.getElementById('date').value;
+
+            fetch('/concerts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, location, date })
+            })
+            .then(response => response.json())
+            .then(() => {
+                fetchConcerts();
+                addConcertForm.reset();
+            });
+        });
+
+        // Delete
+        function deleteConcert(id) {
+            fetch(`/concerts/${id}`, {
+                method: 'DELETE'
+            })
+            .then(() => fetchConcerts());
+        }
+
+        // Show update form
+        function showUpdateForm(id, name, location, date) {
+            const updateForm = document.createElement('form');
+            updateForm.innerHTML = `
+                <input type="text" id="update-name" value="${name}" required>
+                <input type="text" id="update-location" value="${location}" required>
+                <input type="date" id="update-date" value="${new Date(date).toISOString().split('T')[0]}" required>
+                <button type="submit">Update Concert</button>
+            `;
+            updateForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const updatedName = document.getElementById('update-name').value;
+                const updatedLocation = document.getElementById('update-location').value;
+                const updatedDate = document.getElementById('update-date').value;
+
+                fetch(`/concerts/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name: updatedName, location: updatedLocation, date: updatedDate })
+                })
+                .then(response => response.json())
+                .then(() => {
+                    fetchConcerts();
+                    updateForm.remove();
+                });
+            });
+
+            concertsList.appendChild(updateForm);
+        }
+
+        // Toggle concerts list visibility
+        toggleConcertsButton.addEventListener('click', () => {
+            if (concertsListContainer.style.display === 'none') {
+                fetchConcerts();
+                concertsListContainer.style.display = 'block';
+                toggleConcertsButton.textContent = 'Hide';
+            } else {
+                concertsListContainer.style.display = 'none';
+                toggleConcertsButton.textContent = 'List';
+            }
+        });
+
+    </script>
+</body>
+</html>
